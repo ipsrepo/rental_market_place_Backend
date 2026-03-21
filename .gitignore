@@ -141,3 +141,4 @@ vite.config.ts.timestamp-*
 # IDE files
 .idea
 /package-lock.json
+/config.env
