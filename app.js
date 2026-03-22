@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 const AppError = require("./utils/appError");
+const PropertyRoutes = require('./routes/propertyRoutes');
+const UserRoutes = require('./routes/userRoutes');
 
 
 const app = express();
@@ -24,6 +26,15 @@ app.use((req, res, next) => {
 
 // Handle CORS error
 app.use(cors());
+
+
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/v1/users', UserRoutes);
+app.use('/api/v1/property', PropertyRoutes);
 
 app.get('/', (req, res) => {
   res.send('got the response');

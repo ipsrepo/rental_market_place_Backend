@@ -48,7 +48,7 @@ const PropertySchema = new mongoose.Schema(
                 values: ["entire_place", "private_room", "shared_room"],
                 message: '{VALUE} is not a supported rental type',
             },
-            default: 'whole',
+            default: 'entire_place',
         },
 
         bedrooms: {
@@ -108,8 +108,9 @@ const PropertySchema = new mongoose.Schema(
         },
 
         owner: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            // type: mongoose.Schema.Types.ObjectId,
+            // ref: 'User',
+            type: String,
             required: [true, 'Property must belong to an owner'],
             index: true,
         },
@@ -148,6 +149,7 @@ PropertySchema.index({ owner: 1, createdAt: -1 });
 
 PropertySchema.pre(/^find/, function (next) {
     this.find({ active: { $ne: false } });
+    next();
 });
 
 const Property = mongoose.model('Property', PropertySchema);
