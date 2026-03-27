@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const Property = require('./propertyModel');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -26,6 +27,12 @@ const userSchema = new mongoose.Schema({
       message: 'Please provide a valid mobile number',
     },
   },
+  savedProperty:  [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Property',
+    },
+  ],
 
   password: {
     type: String,

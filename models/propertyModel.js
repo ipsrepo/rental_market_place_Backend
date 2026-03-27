@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = require('./userModel');
 
 const PropertySchema = new mongoose.Schema(
     {
@@ -108,9 +109,8 @@ const PropertySchema = new mongoose.Schema(
         },
 
         owner: {
-            // type: mongoose.Schema.Types.ObjectId,
-            // ref: 'User',
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: [true, 'Property must belong to an owner'],
             index: true,
         },
