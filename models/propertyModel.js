@@ -109,8 +109,9 @@ const PropertySchema = new mongoose.Schema(
         },
 
         owner: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            // type: mongoose.Schema.Types.ObjectId,
+            // ref: 'User',
+            type: "string",
             required: [true, 'Property must belong to an owner'],
             index: true,
         },

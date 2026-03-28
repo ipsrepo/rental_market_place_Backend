@@ -22,10 +22,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: [true, 'Mobile number is required'],
-    validate: {
-      validator: (val) => validator.isMobilePhone(val),
-      message: 'Please provide a valid mobile number',
-    },
   },
   savedProperty:  [
     {
@@ -37,7 +33,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'password is required'],
-    minlength: 8,
     select: false,
   },
   passwordConfirm: {
