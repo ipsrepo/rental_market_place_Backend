@@ -5,7 +5,7 @@ const cors = require('cors');
 const AppError = require("./utils/appError");
 const PropertyRoutes = require('./routes/propertyRoutes');
 const UserRoutes = require('./routes/userRoutes');
-
+const FavoriteRoutes = require('./routes/favoriteRoutes');
 
 const app = express();
 
@@ -35,6 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/v1/users', UserRoutes);
 app.use('/api/v1/property', PropertyRoutes);
+app.use('/api/v1/favorites', FavoriteRoutes);
 
 app.get('/', (req, res) => {
   res.send('got the response');

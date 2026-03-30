@@ -5,11 +5,11 @@ const router = express.Router();
 
 router
     .route('/')
-    .get(favoriteController.getAllFavorites)
+    .delete(favoriteController.deleteFavorite)
     .post(favoriteController.createFavorite);
 
 router
     .route('/:id')
-    .delete(favoriteController.deleteFavorite);
+    .get(favoriteController.getAllFavorites)
 
 module.exports = router;
