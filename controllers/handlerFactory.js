@@ -84,8 +84,6 @@ exports.getAll = (Model) =>
             .limit()
             .pagination();
 
-        console.log(features.query)
-
         const data = await features.query;
 
         res.status(200).json({
