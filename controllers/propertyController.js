@@ -22,6 +22,15 @@ exports.processImages = (req, res, next) => {
     next();
 };
 
+exports.setOwnerFilter = (req, res, next) => {
+    if (req.params.ownerId) {
+        req.query.owner = req.params.ownerId;
+    }
+    next();
+};
+
+exports.getPropertiesByOwner = factory.getAll(Property);
+
 exports.createProperty = factory.createOne(Property);
 exports.updateProperty = factory.updateOne(Property);
 exports.deleteProperty = factory.deleteOne(Property);

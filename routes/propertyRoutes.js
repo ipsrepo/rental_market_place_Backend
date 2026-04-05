@@ -10,6 +10,9 @@ router
     .get(propertyController.getAllProperties)
     .post(upload.array('images', 10), propertyController.processImages, propertyController.createProperty);
 
+router
+    .route('/owner/:ownerId')
+    .get(propertyController.setOwnerFilter, propertyController.getPropertiesByOwner);
 
 router
     .route('/:id')
