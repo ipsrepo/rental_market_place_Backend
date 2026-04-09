@@ -6,6 +6,7 @@ const AppError = require("./utils/appError");
 const PropertyRoutes = require('./routes/propertyRoutes');
 const UserRoutes = require('./routes/userRoutes');
 const FavoriteRoutes = require('./routes/favoriteRoutes');
+const MailRoutes = require('./routes/mailRoutes');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1/users', UserRoutes);
 app.use('/api/v1/property', PropertyRoutes);
 app.use('/api/v1/favorites', FavoriteRoutes);
+app.use('/api/v1/mail', MailRoutes);
 
 app.get('/', (req, res) => {
   res.send('got the response');
