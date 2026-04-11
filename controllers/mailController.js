@@ -7,7 +7,7 @@ const AppError = require('../utils/appError');
 exports.sendMail = catchAsync(async (req, res, next) => {
 
 
-    const {name, email, mobile, details} = req.body;
+    const {name, email, mobile, message} = req.body;
 
     // Validate required fields
     if (!name || !email || !mobile) {
@@ -36,7 +36,7 @@ exports.sendMail = catchAsync(async (req, res, next) => {
         senderName: name,
         senderEmail: email,
         senderMobile: mobile,
-        details: details || null,
+        details: message || null,
     });
 
     res.status(200).json({
