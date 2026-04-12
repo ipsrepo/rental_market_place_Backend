@@ -85,19 +85,21 @@ Building this with raw Express required deliberate architecture decisions around
 
 ## 🛠 Tech Stack
 
-| | |
-|---|---|
-| Runtime | Node.js (CommonJS) |
-| Framework | Express.js v4 |
-| Database | MongoDB (Atlas cloud + local) |
-| ODM | Mongoose v8 |
-| Authentication | JSON Web Tokens + bcryptjs |
-| Image Storage | Cloudinary + multer-storage-cloudinary |
-| Email | Nodemailer (Gmail SMTP) |
-| Security | Helmet, CORS, express-mongo-sanitize |
-| Deployment | Vercel (Serverless Node) |
- 
----
+| Layer          | Technology                             |
+|----------------|----------------------------------------|
+| Runtime        | Node.js (CommonJS)                     |
+| Framework      | Express.js v4                          |
+| Database       | MongoDB (Atlas Cloud + Local)          |
+| ODM            | Mongoose v8                            |
+| Authentication | JSON Web Tokens (JWT) + bcryptjs       |
+| Image Storage  | Cloudinary + multer-storage-cloudinary |
+| Email Service  | Nodemailer (Gmail SMTP)                |
+| Security       | Helmet, CORS, express-mongo-sanitize   |
+| Logging        | Morgan                                 |
+| Testing        | Jest                                   |
+| Deployment     | Vercel (Serverless Node)               |
+| Dev Tools      | Nodemon, ESLint, Prettier              |
+
 
 ## 🚀 Implementation Steps
 
@@ -183,27 +185,6 @@ Building this with raw Express required deliberate architecture decisions around
 - Used `@vercel/node` builder for serverless Node function
 - All `config.env` variables added to Vercel project environment settings
 - Switched connection string to Atlas (`DATABASE`) for cloud deployment
-
----
- 
----
-
-## 🛠 Tech Stack
-
-| Layer          | Technology                             |
-|----------------|----------------------------------------|
-| Runtime        | Node.js (CommonJS)                     |
-| Framework      | Express.js v4                          |
-| Database       | MongoDB (Atlas Cloud + Local)          |
-| ODM            | Mongoose v8                            |
-| Authentication | JSON Web Tokens (JWT) + bcryptjs       |
-| Image Storage  | Cloudinary + multer-storage-cloudinary |
-| Email Service  | Nodemailer (Gmail SMTP)                |
-| Security       | Helmet, CORS, express-mongo-sanitize   |
-| Logging        | Morgan                                 |
-| Testing        | Jest                                   |
-| Deployment     | Vercel (Serverless Node)               |
-| Dev Tools      | Nodemon, ESLint, Prettier              |
 
 ---
 
