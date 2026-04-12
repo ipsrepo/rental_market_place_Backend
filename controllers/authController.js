@@ -116,7 +116,7 @@ exports.protectRoute = catchAsync(async (req, res, next) => {
     token,
     process.env.JWT_TOKEN,
   );
-  console.log(userDetailsBasedOnToken);
+  console.log("userDetailsBasedOnToken", userDetailsBasedOnToken);
 
   // 3) Verify the user still exists
   const currentUser = await User.findById(userDetailsBasedOnToken.id);
@@ -124,12 +124,6 @@ exports.protectRoute = catchAsync(async (req, res, next) => {
     return next(
       new AppError('The User and Token not matching, Please login again!', 401),
     );
-  // 4) Check if user changed password after the token was issued
-  if (currentUser.validatePasswordModification(userDetailsBasedOnToken.iat)) {
-    return next(
-      new AppError('User recently changed password, Please login again!', 401),
-    );
-  }
 
   // Grand Access to the protected route
   req.user = currentUser;
