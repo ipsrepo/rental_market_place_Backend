@@ -485,3 +485,4 @@ This backend provides a complete, production-ready API layer for a rental market
 - Stackoverflow - https://stackoverflow.com/
 - Reddit - https://www.reddit.com/r/mongodb/
 - dev.to - https://dev.to/
+- Clude - https://claude.ai/
