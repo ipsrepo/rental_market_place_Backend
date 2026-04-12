@@ -40,7 +40,7 @@ app.use('/api/v1/favorites', FavoriteRoutes);
 app.use('/api/v1/mail', MailRoutes);
 
 app.get('/', (req, res) => {
-  res.send('got the response');
+  res.send('Server running');
 });
 
 // Handle all the unhandled Routes
