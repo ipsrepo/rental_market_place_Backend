@@ -24,7 +24,6 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 2. Filtered out unwanted fields names that are not allowed
   const profileData = filterObj(req.body, 'name', 'email');
 
   // 3. Update user document
@@ -33,7 +32,6 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
     runValidators: true,
   });
 
-  // const user = await Tour.find().where('duration').gte(10);
   res.status(200).json({
     status: 'success',
     data: updatedUser,
