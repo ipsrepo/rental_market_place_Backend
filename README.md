@@ -190,19 +190,20 @@ Building this with raw Express required deliberate architecture decisions around
 
 ## 🛠 Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | Node.js (CommonJS) |
-| Framework | Express.js v4 |
-| Database | MongoDB (Atlas Cloud + Local) |
-| ODM | Mongoose v8 |
-| Authentication | JSON Web Tokens (JWT) + bcryptjs |
-| Image Storage | Cloudinary + multer-storage-cloudinary |
-| Email Service | Nodemailer (Gmail SMTP) |
-| Security | Helmet, CORS, express-mongo-sanitize |
-| Logging | Morgan |
-| Deployment | Vercel (Serverless Node) |
-| Dev Tools | Nodemon, ESLint, Prettier |
+| Layer          | Technology                             |
+|----------------|----------------------------------------|
+| Runtime        | Node.js (CommonJS)                     |
+| Framework      | Express.js v4                          |
+| Database       | MongoDB (Atlas Cloud + Local)          |
+| ODM            | Mongoose v8                            |
+| Authentication | JSON Web Tokens (JWT) + bcryptjs       |
+| Image Storage  | Cloudinary + multer-storage-cloudinary |
+| Email Service  | Nodemailer (Gmail SMTP)                |
+| Security       | Helmet, CORS, express-mongo-sanitize   |
+| Logging        | Morgan                                 |
+| Testing        | Jest                                   |
+| Deployment     | Vercel (Serverless Node)               |
+| Dev Tools      | Nodemon, ESLint, Prettier              |
 
 ---
 
@@ -289,6 +290,12 @@ rental_market_place_Backend/
 ├── config.env              # Environment variables (not committed to git)
 ├── vercel.json             # Vercel deployment config
 ├── package.json
+│
+├── __tests__/
+│   ├── appError.test.js            # app Error unit test
+│   ├── catchAsync.test.js          # catch async unit test
+│   ├── propertyController.test.js  # property controller unit test
+│   └── routes.integration.test.js  # routes integration test
 │
 ├── routes/
 │   ├── userRoutes.js       # Auth + user management
