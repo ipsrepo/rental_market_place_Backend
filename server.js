@@ -18,7 +18,7 @@ const DB = process.env.DATABASE.replace(
 );
 
 // const DB = process.env.DATABASE_LOCAL;
-// console.log('🔍 DB string:', DB);
+console.log('🔍 DB string:', DB);
 
 mongoose
     .connect(DB, {
