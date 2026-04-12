@@ -1,14 +1,193 @@
-# Rental Marketplace — Backend API
 <img width="701" height="143" alt="image" src="https://github.com/user-attachments/assets/6d995353-4ade-40be-952f-23df65590202" />
 
+# Rental Marketplace Backend API - B9IS123 PROGRAMMING FOR INFORMATION SYSTEMS
 
-A production-ready RESTful API for a rental property marketplace, built with Node.js, Express, and MongoDB. Supports property listings, user authentication, favourites, Cloudinary image uploads, and email enquiries — deployed on Vercel.
-The Frontend Repo is deployed in Github pages.
+## Project Overview
+
+This is the REST API layer for Rental Marketplace — a platform connecting property owners with prospective tenants in Ireland. It exposes four resource groups (users, properties, favourites, mail) over a versioned API (`/api/v1/...`) and is consumed entirely by the React frontend.
+
+The backend handles authentication with JWTs, stores property images on Cloudinary, persists all data in MongoDB Atlas, and sends real email notifications to property owners when a prospective tenant submits an enquiry. It is deployed as a serverless Node function on Vercel.
 
 Live site : https://ipsrepo.github.io/rental_market_place_Frontend/
 
 Frontend Repo: https://github.com/ipsrepo/rental_market_place_Frontend
 
+---
+
+## Problem Statement
+
+A rental marketplace needs a reliable, secure API that can:
+
+- Authenticate users and protect sensitive operations without session state
+- Store and serve property listings with rich metadata (type, BER rating, images, availability)
+- Handle image uploads without bloating the database — images must be stored externally
+- Allow tenants to bookmark properties and retrieve their saved list
+- Notify property owners of enquiries instantly without building a messaging system from scratch
+
+Building this with raw Express required deliberate architecture decisions around error handling, code reuse, and security — all of which are addressed in this project.
+ 
+---
+
+## Features
+
+### Authentication
+- JWT-based stateless authentication (90-day expiry)
+- Passwords hashed with bcrypt (cost factor 12)
+- HTTP-only cookie + response body token delivery
+- Route protection middleware (`protectRoute`) — all sensitive endpoints guarded
+- Password update endpoint with current-password verification
+
+### User Management
+- User registration and login
+- Profile update (name, email) — password changes handled separately
+- Soft account deactivation (`active: false`) — user disappears from all queries without deletion
+- Pre-find middleware automatically excludes inactive users from every query
+
+### Property Listings
+- Full CRUD for rental properties
+- Rich schema: type, rental type, BER energy rating (A1–G), beds, baths, furnished, bills included, availability date
+- Multi-image support: up to 10 images per listing, first image auto-assigned as primary
+- Text index on title, location, and details with weighted relevance for search
+- Compound indexes on `available + location + price` and `owner + createdAt` for fast queries
+- Soft delete (`active: false`) — listings invisible to API without permanent removal
+- Filter by owner for dashboard queries
+
+### Image Upload
+- Images uploaded directly to Cloudinary via `multer-storage-cloudinary`
+- Automatic transformation: max 1200×800px, auto quality
+- Only image MIME types accepted, 5MB per file limit
+- Cloudinary URLs stored directly in the property document
+
+### Favourites
+- Add / remove / list favourited properties per user
+- Populates full property document on list queries
+- Delete by `user + property` pair — no ID required
+
+### Email Enquiries
+- Sends a branded HTML email to the property owner when a tenant submits an enquiry
+- Email includes enquirer's name, email, mobile, message, and property details
+- Uses Gmail SMTP via Nodemailer with App Password auth
+- `Reply-To` header set to enquirer's email for direct owner response
+
+### Error Handling
+- Custom `AppError` class with `isOperational` flag
+- `catchAsync` wrapper eliminates try/catch boilerplate across all controllers
+- Global error middleware — full detail in development, sanitised messages in production
+- Handles: CastError, duplicate key (11000), ValidationError, JsonWebTokenError, TokenExpiredError
+- `uncaughtException` and `unhandledRejection` handlers in `server.js` for process-level safety
+
+### Security
+- `helmet` — secure HTTP headers
+- `cors` — cross-origin request handling
+- `express-mongo-sanitize` — prevents NoSQL injection
+- JWT secret minimum 32 characters enforced by convention
+- Passwords excluded from all query results (`select: false`)
+
+---
+
+## 🛠 Tech Stack
+
+| | |
+|---|---|
+| Runtime | Node.js (CommonJS) |
+| Framework | Express.js v4 |
+| Database | MongoDB (Atlas cloud + local) |
+| ODM | Mongoose v8 |
+| Authentication | JSON Web Tokens + bcryptjs |
+| Image Storage | Cloudinary + multer-storage-cloudinary |
+| Email | Nodemailer (Gmail SMTP) |
+| Security | Helmet, CORS, express-mongo-sanitize |
+| Deployment | Vercel (Serverless Node) |
+ 
+---
+
+## 🚀 Implementation Steps
+
+### Step 1 — Project Scaffolding
+- Initialised Node.js project with `npm init`
+- Installed core dependencies: `express`, `mongoose`, `dotenv`, `morgan`
+- Separated `app.js` (Express setup) from `server.js` (DB connection + process bootstrap) for clean architecture
+- Configured `nodemon` for development auto-restart
+
+### Step 2 — MongoDB Connection
+- Connected to MongoDB using Mongoose in `server.js`
+- Supported both local (`DATABASE_LOCAL`) and Atlas (`DATABASE`) connection strings via `.env`
+- Configured `serverSelectionTimeoutMS: 10000` and `socketTimeoutMS: 45000` for Atlas resilience
+- Added `uncaughtException` handler before app load and `unhandledRejection` handler after server start
+
+### Step 3 — User Model & Auth
+- Designed `userSchema` with name, email (unique, validated), mobile (unique), password (`select: false`), and `active` (soft delete)
+- Added `pre('save')` middleware to hash password with bcrypt when modified — `passwordConfirm` never persisted
+- Added `pre(/^find/)` middleware to exclude inactive users from all queries automatically
+- Implemented `validatePassword` instance method using `bcrypt.compare`
+- Built `authController`: `signup`, `login`, `updatePassword`, `protectRoute`
+- `protectRoute` reads Bearer token, verifies JWT, fetches user from DB, attaches to `req.user`
+- `createSendToken` helper signs JWT and sets HTTP-only cookie with configurable expiry
+
+### Step 4 — Error Handling Architecture
+- Created `AppError` class extending native `Error` — sets `statusCode`, `status`, `isOperational`
+- Created `catchAsync` higher-order function — wraps async handlers to forward rejections to `next(err)`
+- Built global error middleware in `errorController.js`:
+    - Development mode: sends full error with stack trace
+    - Production mode: maps known Mongoose/JWT errors to user-friendly messages, hides internals for unknown errors
+
+### Step 5 — Handler Factory
+- Built `handlerFactory.js` with five generic functions: `getAll`, `getOne`, `createOne`, `updateOne`, `deleteOne`
+- `getAll` integrates `APIFeatures` for filter, sort, field selection, and pagination from query params
+- All handlers wrapped in `catchAsync` and return consistent JSON response shapes
+- Controllers use factory functions directly — eliminates repetitive CRUD boilerplate
+
+### Step 6 — API Features Utility
+- Built `APIFeatures` class with chainable methods
+- `filter()` — strips pagination/sort/field params, converts `gte/gt/lte/lt` to MongoDB operators
+- `sort()` — splits comma-separated sort fields; defaults to `-createdAt name`
+- `limit()` — projects only requested fields; strips `__v` by default
+- `pagination()` — calculates skip/limit from `page` and `limit` query params; defaults to page 1, limit 100
+- Used `qs` library for robust nested query string parsing
+
+### Step 7 — Property Model & Routes
+- Designed `PropertySchema` with full rental metadata — type, rental type, price, BER (A1–G), booleans for furnished/bills/bathroom, image arrays
+- Added three MongoDB indexes: full-text search (weighted), compound availability+location+price, compound owner+createdAt
+- Added `pre(/^find/)` to exclude inactive properties automatically
+- Built `propertyController`:
+    - `processImages` middleware — converts FormData strings to booleans/numbers, maps Cloudinary URLs to `primaryimage` and `images[]`
+    - `setOwnerFilter` middleware — injects `owner` query param for filtered listing
+    - All CRUD delegated to handler factory
+
+### Step 8 — Cloudinary & Image Upload
+- Configured Cloudinary SDK with env credentials in `utils/cloudinary.js`
+- Created `CloudinaryStorage` instance targeting `rent-market/properties` folder with auto-quality transformation
+- Set up `multer` with Cloudinary storage, 5MB limit, and image MIME type filter
+- Exported `upload` middleware — used as `upload.array('images', 10)` in property routes
+
+### Step 9 — Favourites
+- Designed `FavoriteSchema` with `property` (ref) and `user` (ref, required)
+- `createFavorite` delegated to factory
+- `deleteFavorite` uses `findOneAndDelete({ user, property })` — removes by pair, not just ID
+- `getAllFavorites` filters by `user` query param and populates full property documents
+
+### Step 10 — Mail Service & Enquiry Route
+- Configured Nodemailer transporter with Gmail SMTP + App Password in `services/mail.service.js`
+- `sendEnquiryEmail` builds a fully branded HTML email with property details and enquirer contact info
+- `mailController.sendMail` validates required fields, fetches property + owner, calls service
+- `Reply-To` header set to enquirer email so owner can reply directly
+- Route protected with `authController.protectRoute` — only logged-in users can send enquiries
+
+### Step 11 — Security Hardening
+- Added `helmet()` for secure HTTP headers
+- Added `cors()` for cross-origin support
+- Registered `express-mongo-sanitize` to strip `$` and `.` from user input
+- Rate limiting available via installed `express-rate-limit` package
+- Passwords excluded globally via `select: false` on schema
+
+### Step 12 — Vercel Deployment
+- Created `vercel.json` routing all requests to `server.js`
+- Used `@vercel/node` builder for serverless Node function
+- All `config.env` variables added to Vercel project environment settings
+- Switched connection string to Atlas (`DATABASE`) for cloud deployment
+
+---
+ 
 ---
 
 ## 🛠 Tech Stack
@@ -145,64 +324,37 @@ rental_market_place_Backend/
 
 ---
 
-## 🛣 Routes Reference
+## Routes Reference
 
-The API base URL is `/api/v1`. All routes below are relative to this base.
+Base URL: `/api/v1`
 
-### User Routes — `/api/v1/users`
-
-| Method | Endpoint | Auth Required | Description |
-|---|---|---|---|
-| `POST` | `/signup` | ❌ | Register a new user |
-| `POST` | `/login` | ❌ | Login and receive JWT token |
-| `GET` | `/:id` | ❌ | Get user by ID |
-| `DELETE` | `/:id` | ❌ | Delete user by ID |
+### Users — `/users`
+- `POST /signup` — Register user
+- `POST /login` — Login and get token
+- `GET /:id` — Get user
+- `DELETE /:id` — Delete user
 
 ---
 
-### Property Routes — `/api/v1/property`
-
-| Method | Endpoint | Auth Required | Description |
-|---|---|---|---|
-| `GET` | `/` | ❌ | Get all properties (with filtering/sorting/pagination) |
-| `POST` | `/` | ✅ | Create a new property listing (with image upload) |
-| `GET` | `/owner/:ownerId` | ❌ | Get all properties by a specific owner |
-| `GET` | `/:id` | ✅ | Get a single property by ID |
-| `PATCH` | `/:id` | ✅ | Update a property (with optional new images) |
-| `DELETE` | `/:id` | ✅ | Delete a property |
-
-**Image Upload:** The `POST /` and `PATCH /:id` routes accept `multipart/form-data` with a field named `images` (up to 10 files). The first image is set as `primaryimage` automatically.
+### Property — `/property`
+- `GET /` — Get all properties
+- `POST /` — Create property (with images)
+- `GET /owner/:ownerId` — Get properties by owner
+- `GET /:id` — Get single property
+- `PATCH /:id` — Update property
+- `DELETE /:id` — Delete property
 
 ---
 
-### Favourite Routes — `/api/v1/favorites`
-
-All favourite routes require authentication.
-
-| Method | Endpoint | Auth Required | Description |
-|---|---|---|---|
-| `GET` | `/` | ✅ | Get all favourites for a user (`?user=userId`) |
-| `POST` | `/` | ✅ | Add a property to favourites |
-| `DELETE` | `/` | ✅ | Remove a property from favourites |
+### Favourites — `/favorites`
+- `GET /` — Get user favourites
+- `POST /` — Add to favourites
+- `DELETE /` — Remove from favourites
 
 ---
 
-### 📧 Mail Routes — `/api/v1/mail`
-
-| Method | Endpoint | Auth Required | Description |
-|---|---|---|---|
-| `POST` | `/:propertyId` | ✅ | Send an enquiry email to the property owner |
-
-**Request Body:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "mobile": "+353 87 123 4567",
-  "details": "I am interested in viewing this property next week."
-}
-```
-
+### Mail — `/mail`
+- `POST /:propertyId` — Send enquiry email
 ---
 
 ## Controllers
