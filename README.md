@@ -33,14 +33,12 @@ Building this with raw Express required deliberate architecture decisions around
 ### Authentication
 - JWT-based stateless authentication (90-day expiry)
 - Passwords hashed with bcrypt (cost factor 12)
-- HTTP-only cookie + response body token delivery
 - Route protection middleware (`protectRoute`) — all sensitive endpoints guarded
 - Password update endpoint with current-password verification
 
 ### User Management
 - User registration and login
-- Profile update (name, email) — password changes handled separately
-- Soft account deactivation (`active: false`) — user disappears from all queries without deletion
+- Delete user
 - Pre-find middleware automatically excludes inactive users from every query
 
 ### Property Listings
@@ -423,7 +421,6 @@ Specific Mongoose/JWT errors are mapped to human-readable messages:
 | Error Type | Handler |
 |---|---|
 | `CastError` | Invalid MongoDB ObjectId format |
-| Code `11000` | Duplicate field value (unique constraint) |
 | `ValidationError` | Mongoose schema validation failure |
 | `JsonWebTokenError` | Invalid/tampered JWT |
 | `TokenExpiredError` | Expired JWT |
@@ -538,28 +535,6 @@ The email template is fully styled in inline HTML and includes:
 - A property info block (title + location)
 - An enquirer details table (name, email, mobile, optional message)
 - A reply prompt linking directly to the enquirer's email and phone number
-
----
-
-## 🗄 MongoDB Cluster
-
-### Connection Strategy
-
-The app supports two connection modes via `server.js`:
-
-- **Atlas Cloud** (`DATABASE`) — A full MongoDB Atlas connection string with a placeholder `<PASSWORD>` replaced at runtime (currently commented out in favour of the local connection during development).
-
-Connection options include a 10-second server selection timeout and a 45-second socket timeout to handle slow or intermittent Atlas responses.
-
-### Database: `rentMarket`
-
-Three collections are used:
-
-| Collection | Model | Purpose |
-|---|---|---|
-| `users` | `User` | Registered user accounts |
-| `properties` | `Property` | Rental property listings |
-| `favorites` | `Favorite` | Saved properties per user |
 
 ---
 
