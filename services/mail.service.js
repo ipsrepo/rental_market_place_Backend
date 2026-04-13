@@ -9,8 +9,8 @@ const transporter = nodemailer.createTransport({
 });
 
 transporter.verify((err) => {
-    if (err) console.error('❌ Mail service error:', err.message);
-    else console.log('✅ Mail service ready');
+    if (err) console.error('Mail service error:', err.message);
+    else console.log('Mail service ready');
 });
 
 const sendEnquiryEmail = async ({

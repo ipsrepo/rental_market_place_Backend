@@ -7,6 +7,7 @@ const FavoriteSchema = new mongoose.Schema({
             {
                 type: mongoose.Schema.ObjectId,
                 ref: 'Property',
+                required: [true, 'Property is  required'],
             },
         user: {
             type: mongoose.Schema.Types.ObjectId,

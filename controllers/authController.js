@@ -64,33 +64,6 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 201, res);
 });
 
-exports.updatePassword = catchAsync(async (req, res, next) => {
-  // 1) Get the user from collection
-  const user = await User.findById(req.user.id).select('+password');
-  // 2) Check if body password is correct
-  if (!(await user.validatePassword(req.body.currentPassword, user.password))) {
-    return next(
-      new AppError(
-        'You current password in wrong, Please enter right one!',
-        401,
-      ),
-    );
-  }
-  // 3) if Yes update the password
-  user.password = req.body.newPassword;
-  user.passwordConfirm = req.body.newPasswordConfirm;
-  //  4) Login User and send JWT
-  await user.save();
-
-  // 4) Login user and send JWT
-  const token = signToken(user._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-  });
-});
-
 // MIDDLEWARE to protect the routes
 exports.protectRoute = catchAsync(async (req, res, next) => {
   // 1) Get the token exists

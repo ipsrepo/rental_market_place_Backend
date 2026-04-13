@@ -58,14 +58,6 @@ const userSchema = new mongoose.Schema({
     }
 );
 
-// Middleware - Run only when password modified
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return;
-    this.password = await bcrypt.hash(this.password, 12); // Hash the password with cost 12
-    this.passwordConfirm = undefined;
-    next();
-});
-
 userSchema.pre(/^find/, function (next) {
     console.log('Run before query execution');
     this.find({active: {$ne: false}});
@@ -78,22 +70,6 @@ userSchema.methods.validatePassword = async function (
     actualUserPassword,
 ) {
     return await bcrypt.compare(enteredPassword, actualUserPassword);
-};
-
-// Compare password modified date with token generated date
-// TO validate if user changed password after token generated
-userSchema.methods.validatePasswordModification = function (JWTTimeStamp) {
-    if (this.passwordModifiedAt) {
-        const modifiedTimeStampTime = parseInt(
-            this.passwordModifiedAt.getTime() / 1000,
-            10,
-        );
-
-        return JWTTimeStamp < modifiedTimeStampTime;
-    }
-
-    // False means No changes in password
-    return false;
 };
 
 // Generate Hash based on token

@@ -15,11 +15,10 @@ router
     .route('/owner/:ownerId')
     .get(propertyController.setOwnerFilter, propertyController.getPropertiesByOwner);
 
-router.use(authController.protectRoute);
 router
     .route('/:id')
     .get(propertyController.getProperty)
-    .patch(upload.array('images', 10), propertyController.processImages, propertyController.updateProperty)
-    .delete(propertyController.deleteProperty);
+    .patch(authController.protectRoute, upload.array('images', 10), propertyController.processImages, propertyController.updateProperty)
+    .delete(authController.protectRoute, propertyController.deleteProperty);
 
 module.exports = router;
