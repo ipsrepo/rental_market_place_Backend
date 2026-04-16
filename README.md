@@ -10,6 +10,8 @@ The backend handles authentication with JWTs, stores property images on Cloudina
 
 Live site : https://ipsrepo.github.io/rental_market_place_Frontend/
 
+Deployed server : https://rental-market-place-backend.vercel.app/
+
 Frontend Repo: https://github.com/ipsrepo/rental_market_place_Frontend
 
 ---
@@ -526,6 +528,12 @@ The email template is fully styled in inline HTML and includes:
 
 ---
 
+## Test Coverage
+
+<img width="799" height="820" alt="Screenshot 2026-04-11 084643" src="https://github.com/user-attachments/assets/1304f12a-4bab-4965-8ab3-5fd6ebbe06f0" />
+
+---
+
 ## Other Notable Features
 
 ### Security Middleware (`app.js`)
@@ -586,6 +594,7 @@ This backend provides a complete, production-ready API layer for a rental market
 - **MongoDB Atlas** - https://www.mongodb.com/cloud/atlas
 - **Cloudinary Node.js SDK** - https://cloudinary.com/documentation/node_integration
 - **Nodemailer Documentation** - https://nodemailer.com/
+- **Jest** - http://jestjs.io/
 - **Vercel Node.js Deployment** - https://vercel.com/docs/runtimes#official-runtimes/node-js
 
 
