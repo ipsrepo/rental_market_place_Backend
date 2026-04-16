@@ -9,28 +9,28 @@ exports.processImages = (req, res, next) => {
         }
     });
 
-    if (req.body.price)     req.body.price     = Number(req.body.price);
-    if (req.body.bedrooms)  req.body.bedrooms  = Number(req.body.bedrooms);
+    if (req.body.price) req.body.price = Number(req.body.price);
+    if (req.body.bedrooms) req.body.bedrooms = Number(req.body.bedrooms);
     if (req.body.bathrooms) req.body.bathrooms = Number(req.body.bathrooms);
 
     const existingPrimary = req.body.existingPrimary || null;
-    const existingImages  = req.body.existingImages
+    const existingImages = req.body.existingImages
         ? Array.isArray(req.body.existingImages)
             ? req.body.existingImages
             : [req.body.existingImages]
         : [];
 
     const newFiles = req.files || [];
-    const newUrls  = newFiles.map(f => f.path);
+    const newUrls = newFiles.map(f => f.path);
 
     const allImages = [...existingImages, ...newUrls];
 
     if (existingPrimary) {
         req.body.primaryimage = existingPrimary;
-        req.body.images       = allImages;
+        req.body.images = allImages;
     } else if (newUrls.length > 0) {
         req.body.primaryimage = newUrls[0];
-        req.body.images       = [...existingImages, ...newUrls.slice(1)];
+        req.body.images = [...existingImages, ...newUrls.slice(1)];
     }
 
     delete req.body.existingPrimary;

@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 const AppError = require("./utils/appError");
+const genericErrorHandler = require('./controllers/errorController');
 const PropertyRoutes = require('./routes/propertyRoutes');
 const UserRoutes = require('./routes/userRoutes');
 const FavoriteRoutes = require('./routes/favoriteRoutes');
@@ -49,5 +50,7 @@ app.all('/{*any}', (req, res, next) => {
       new AppError(`Unable to find the ${req.originalUrl} in the server!!!`, 404),
   );
 });
+
+app.use(genericErrorHandler);
 
 module.exports = app;
