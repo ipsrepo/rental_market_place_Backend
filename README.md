@@ -577,7 +577,12 @@ All variables from `config.env` must be added to the Vercel project's Environmen
 
 Deployed and currently running the server in : https://rental-market-place-backend.vercel.app/
 
----
+
+## AI Usage
+
+- **Debugging** — Used Claude to diagnose and resolve configuration conflicts and unexpected issues during development.
+- **Code Refinement** — Used Claude to review controller logic and improve.
+
 
 ## Conclusion
 
@@ -610,3 +615,8 @@ This backend provides a complete, production-ready API layer for a rental market
 - Reddit - https://www.reddit.com/r/mongodb/
 - dev.to - https://dev.to/
 - Clude - https://claude.ai/
+
+ ### Prompts:
+- https://claude.ai/share/4b5b95ae-79a3-4d5b-8c90-8661a9bee269
+- https://claude.ai/share/a4e6422a-4f90-404b-9652-3fea48d99aab
+- https://claude.ai/share/22422dcb-5433-475b-9f9c-387f9f998310
